@@ -1,0 +1,33 @@
+services:
+  app:
+    <<: *network-common
+    image: "pan1c/swarm-oom-exporter:1.0.0"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      POLL_INTERVAL: "15"
+      METRICS_PORT: "9358"
+    labels:
+      co.elastic.logs/enabled: "false"
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 256M
+      update_config:
+        parallelism: 1
+        delay: 5s
+        monitor: 15s
+        order: stop-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+    user: root
