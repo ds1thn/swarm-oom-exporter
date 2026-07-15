@@ -1,3 +1,13 @@
+version: "3.9"
+networks:
+  overlay:
+    name: "my-net"
+    external: true
+
+x-network: &network-common
+  networks:
+    overlay:
+
 services:
   app:
     <<: *network-common
